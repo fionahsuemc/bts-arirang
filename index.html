@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTS《ARIRANG》2026 巡迴 — 情緒歌單</title>
+<style>
+:root {
+  --bg: #07000F;
+  --surface: #110020;
+  --primary: #7B2FBE;
+  --primary-light: #C084FC;
+  --accent: #F0ABFC;
+  --text: #F3E8FF;
+  --muted: #9B8BB0;
+  --card: rgba(123,47,190,0.12);
+  --card-hover: rgba(123,47,190,0.25);
+  --border: rgba(192,132,252,0.2);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', sans-serif;
+}
+
+/* ── HEADER ── */
+header {
+  height: 64px;
+  background: linear-gradient(135deg,#1A0035,#07000F);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.logo { font-size: 1.6rem; }
+header h1 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  background: linear-gradient(90deg,#C084FC,#F0ABFC);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  height: calc(100vh - 64px);
+}
+
+/* ── LEFT PANEL ── */
+.player-panel {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+.panel-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.spotify-embed { border-radius: 12px; overflow: hidden; }
+.info-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.info-box h3 { font-size: 0.82rem; color: var(--primary-light); margin-bottom: 6px; }
+.info-box p  { font-size: 0.78rem; color: var(--muted); line-height: 1.65; }
+.mood-map    { font-size: 0.78rem; color: var(--muted); line-height: 2; }
+
+/* ── RIGHT PANEL ── */
+.browser-panel { display:flex; flex-direction:column; overflow:hidden; }
+
+.mood-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.mood-tab {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+}
+.mood-tab:hover, .mood-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.song-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px;
+}
+.mood-section { margin-bottom: 26px; }
+.mood-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.mood-header h3 { font-size: 0.88rem; color: var(--primary-light); }
+.count {
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: var(--card);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all .18s;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+}
+.song-card:hover {
+  background: var(--card-hover);
+  border-color: var(--border);
+}
+.song-num { font-size: 0.72rem; color: var(--muted); width: 22px; text-align:center; }
+.song-info { flex:1; }
+.song-title { font-size: 0.87rem; font-weight:600; }
+.song-meta  { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
+.play-icon  { font-size:1rem; opacity:0; transition:opacity .2s; }
+.song-card:hover .play-icon { opacity:1; }
+
+/* ── MODAL ── */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.88);
+  z-index: 200;
+  backdrop-filter: blur(10px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.overlay.open { display:flex; }
+.modal {
+  background: linear-gradient(140deg,#1A0035,#08000E);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+}
+.modal-top {
+  padding: 22px 26px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+.modal-top h2  { font-size: 1.25rem; font-weight:700; }
+.modal-top .sub { font-size: 0.76rem; color: var(--muted); margin-top:4px; }
+.mood-badge {
+  display: inline-block;
+  background: var(--primary);
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 0.72rem;
+  margin-top: 8px;
+}
+.close-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items:center; justify-content:center;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.close-btn:hover { background: var(--card-hover); }
+.modal-desc {
+  padding: 10px 26px;
+  font-size: 0.82rem;
+  color: var(--primary-light);
+  background: rgba(123,47,190,.08);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.lyrics-body {
+  flex:1;
+  overflow-y: auto;
+  padding: 22px 26px;
+}
+.col-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.col-header span { font-size: 0.7rem; color: var(--muted); text-align:center; letter-spacing:1px; }
+.lyric-section { margin-bottom: 22px; }
+.section-tag {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.lyric-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(192,132,252,.07);
+}
+.lyric-orig { font-size: 0.88rem; line-height:1.65; }
+.lyric-cn   { font-size: 0.88rem; line-height:1.65; color: var(--primary-light); }
+
+/* scrollbar */
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--primary); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎤</div>
+  <div>
+    <h1>BTS《ARIRANG》2026 巡迴 — 情緒歌單</h1>
+    <p>32 首經典 · 排除新專輯 · 6 種情緒流動 · 完整歌詞翻譯</p>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- LEFT -->
+  <div class="player-panel">
+    <div class="panel-label">🎵 Spotify 播放器</div>
+    <div class="spotify-embed">
+      <iframe
+        src="https://open.spotify.com/embed/playlist/2HGCWh77ek47ZbbfTfkZGZ?utm_source=generator&theme=0"
+        width="100%" height="380" frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+      </iframe>
+    </div>
+    <div class="info-box">
+      <h3>📋 關於此歌單</h3>
+      <p>依情緒流動精選 BTS ARIRANG 2026 巡迴的 32 首經典，排除新專輯曲目。點右側歌名可查看完整中文歌詞。</p>
+    </div>
+    <div class="info-box">
+      <h3>🗺️ 情緒旅程</h3>
+      <div class="mood-map">
+        🔥 點火 — 全場燃燒<br>
+        ⚔️ 宣言 — 力量反抗<br>
+        🌑 深淵 — 黑暗情感<br>
+        🌿 治癒 — 溫柔庇護<br>
+        💕 甜蜜 — 愛與思念<br>
+        ✨ 升空 — 希望慶典
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="browser-panel">
+    <div class="mood-tabs">
+      <button class="mood-tab active" data-mood="all">全部 32首</button>
+      <button class="mood-tab" data-mood="ignite">🔥 點火</button>
+      <button class="mood-tab" data-mood="power">⚔️ 宣言</button>
+      <button class="mood-tab" data-mood="dark">🌑 深淵</button>
+      <button class="mood-tab" data-mood="heal">🌿 治癒</button>
+      <button class="mood-tab" data-mood="love">💕 甜蜜</button>
+      <button class="mood-tab" data-mood="ascend">✨ 升空</button>
+    </div>
+    <div class="song-list" id="songList"></div>
+  </div>
+</div>
+
+<!-- LYRICS MODAL -->
+<div class="overlay" id="overlay" onclick="closeOnBg(event)">
+  <div class="modal">
+    <div class="modal-top">
+      <div>
+        <h2 id="mTitle"></h2>
+        <div class="sub" id="mSub"></div>
+        <div class="mood-badge" id="mMood"></div>
+      </div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-desc" id="mDesc"></div>
+    <div class="lyrics-body">
+      <div class="col-header">
+        <span>原文</span>
+        <span>中文翻譯</span>
+      </div>
+      <div id="lyricsContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MOODS = {
+  ignite: "🔥 點火 — 全場燃燒",
+  power:  "⚔️ 宣言 — 力量反抗",
+  dark:   "🌑 深淵 — 黑暗情感",
+  heal:   "🌿 治癒 — 溫柔庇護",
+  love:   "💕 甜蜜 — 愛與思念",
+  ascend: "✨ 升空 — 希望慶典",
+};
+
+const SONGS = [
+  // ── 🔥 點火 ──
+  { id:1, mood:"ignite", title:"Fire (Burning Up)", year:2016, album:"화양연화 Young Forever",
+    desc:"活在當下、燃燒一切的青春宣言，BPM 最快之一",
+    lyrics:[
+      { s:"Verse 1", lines:[
+        {o:"사는 게 뭔지 아직 난 모르지만", t:"活著是什麼我還不知道"},
+        {o:"고민하기엔 우린 너무 젊어", t:"煩惱的話我們還太年輕"},
+        {o:"속도 없이 웃고 따지지 마", t:"別沒心情地笑，不要計較"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"불태워라, 이 밤이 지나가기 전에", t:"燃燒吧，在這個夜晚過去之前"},
+        {o:"다 태워버려 다 태워버려", t:"全部燒盡吧，全部燒盡吧"},
+        {o:"사랑해라 더 사랑해라", t:"去愛吧，再多愛一點"},
+      ]},
+      { s:"Bridge", lines:[
+        {o:"살아있음을 느껴라", t:"感受活著的感覺"},
+        {o:"Burn it up, burn it up", t:"燃燒吧，燃燒吧"},
+      ]},
+  ]},
+  { id:2, mood:"ignite", title:"Run BTS", year:2022, album:"Proof",
+    desc:"《Proof》精選輯主打，充滿活力的自我宣言，巡演開場必炸",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"달려라 방탄", t:"跑啊，防彈"},
+        {o:"멈추지 마 지금이야", t:"不要停下，就是現在"},
+        {o:"끝이 어딘지 몰라도", t:"就算不知道終點在哪"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"우리가 걸어온 이 길이", t:"我們走過的這條路"},
+        {o:"아무도 걷지 않은 길이어도", t:"就算是沒人走過的路"},
+        {o:"달려라 방탄, 달려라 방탄", t:"跑啊防彈，跑啊防彈"},
+      ]},
+  ]},
+  { id:3, mood:"ignite", title:"Not Today", year:2017, album:"You Never Walk Alone",
+    desc:"反抗與不屈的吶喊，「今天不行，但明天可以」",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"All the underdogs in the world", t:"全世界所有的弱者"},
+        {o:"A day may come when we lose", t:"可能有一天我們會失敗"},
+        {o:"But it is not today", t:"但不是今天"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Not today, ay, not today, ay", t:"今天不行，今天不行"},
+        {o:"우리가 쓰러지는 건 오늘은 아니야", t:"我們倒下的那天不是今天"},
+        {o:"No, not today", t:"不，不是今天"},
+      ]},
+  ]},
+  { id:4, mood:"ignite", title:"Dope (쩔어)", year:2015, album:"화양연화 Pt.1",
+    desc:"對社會「努力沒用」論的強力反擊，嘻哈能量滿載",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"24/7마다 꿈만 꿔", t:"24小時7天只做夢"},
+        {o:"어른들은 뭘 알겠어", t:"大人們懂什麼"},
+        {o:"우린 쩔어", t:"我們太厲害了"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"We're so dope", t:"我們超棒"},
+        {o:"쩔어 쩔어", t:"太帥了 太帥了"},
+        {o:"우리 가는 길에 꽃을 뿌려", t:"在我們前進的路上撒滿鮮花"},
+      ]},
+  ]},
+  { id:5, mood:"ignite", title:"ON", year:2020, album:"Map of the Soul: 7",
+    desc:"軍歌式宣戰宣言，無論多重的重量都要承受前行",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"Bring the pain", t:"帶來痛苦"},
+        {o:"내 목엔 쇠사슬", t:"我的脖子上鎖著鐵鏈"},
+        {o:"그래도 웃어 웃어 웃어", t:"即使如此我仍然笑，笑，笑"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Whatever happens from now on", t:"不管接下來發生什麼"},
+        {o:"I'm on it, I'm on it", t:"我頂住，我頂住"},
+        {o:"Let me try, let me try", t:"讓我試試，讓我試試"},
+      ]},
+  ]},
+  { id:6, mood:"ignite", title:"Dionysus", year:2019, album:"Map of the Soul: Persona",
+    desc:"以酒神比喻對藝術的狂熱，Live 演出最具視覺震撼力之一",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"술이 들어간다", t:"酒喝下去了"},
+        {o:"아티스트는 원래 이렇게 불태워", t:"藝術家本來就是這樣燃燒自己"},
+        {o:"취한 척하는 너와는 달라", t:"和裝醉的你不同"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"I drink alone, drink alone", t:"我獨自喝酒，獨自喝酒"},
+        {o:"Dionysus", t:"酒神狄俄尼索斯"},
+        {o:"나의 thyrsos는 붓과 마이크", t:"我的神杖是畫筆和麥克風"},
+      ]},
+  ]},
+
+  // ── ⚔️ 宣言 ──
+  { id:7, mood:"power", title:"MIC Drop (Steve Aoki Remix)", year:2017, album:"You Never Walk Alone",
+    desc:"對所有批評者的自信回擊，麥克風一丟",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"Did you see my bag?", t:"你看見我的包了嗎（我的成就）"},
+        {o:"너네가 내게 던진 말들", t:"你們對我投來的言語"},
+        {o:"나는 다 받았어", t:"我全部接受了"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Mic drop, drop, drop", t:"麥克風一丟"},
+        {o:"Mic drop", t:"麥克風落地"},
+        {o:"I don't give a damn", t:"我才不在乎"},
+      ]},
+  ]},
+  { id:8, mood:"power", title:"IDOL", year:2018, album:"LOVE YOURSELF 結 'Answer'",
+    desc:"融合傳統韓樂與現代嘻哈，我就是我，不需外界認可的自我宣言",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"어떤 말로도 내 힘을 빼앗을 순 없어", t:"任何話都無法奪走我的力量"},
+        {o:"I'm so fine wherever I am", t:"無論在哪裡我都很好"},
+        {o:"나는 내가 좋아", t:"我就是喜歡自己"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"You can't stop me loving myself", t:"你無法阻止我愛自己"},
+        {o:"You can't stop me loving myself", t:"你無法阻止我愛自己"},
+      ]},
+  ]},
+  { id:9, mood:"power", title:"We Are Bulletproof Pt.2", year:2013, album:"O!RUL8,2?",
+    desc:"出道精神，歷經一切嘲諷仍屹立不搖，全場大合唱燃點",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"야 우리가 왔어", t:"嘿，我們來了"},
+        {o:"우릴 막으려 해봐", t:"試試看能不能攔住我們"},
+        {o:"총 대신 마이크", t:"用麥克風代替槍"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Bulletproof, we are", t:"防彈，我們是防彈的"},
+        {o:"너네 총알도 안 먹혀", t:"你們的子彈對我們不管用"},
+        {o:"We are bulletproof", t:"我們是防彈的"},
+      ]},
+  ]},
+  { id:10, mood:"power", title:"Silver Spoon (뱁새)", year:2016, album:"화양연화 Young Forever",
+    desc:"鷺鷥學鶴步的社會諷刺，階層固化的犀利批判",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"흙수저 금수저 다 집어쳐", t:"土湯匙金湯匙都扔掉"},
+        {o:"남과 비교하기 전에 나 먼저", t:"在和別人比較之前先看看自己"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"뱁새가 황새 따라가다가", t:"鷺鷥學著白鸛走路"},
+        {o:"가랑이가 찢어진다", t:"胯下都裂了"},
+        {o:"부모 탓 말고 니 탓 해", t:"別怨怪父母，怪你自己"},
+      ]},
+  ]},
+  { id:11, mood:"power", title:"So What", year:2020, album:"Map of the Soul: 7",
+    desc:"失敗又如何，輕鬆無懼的吶喊",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"좌우 다 봐도 길이 없어", t:"左右都看了，沒有路"},
+        {o:"그래도 달려가", t:"即使如此也要跑"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"So what?", t:"那又怎樣？"},
+        {o:"살면서 지는 것도 있어", t:"活著也有輸的時候"},
+        {o:"So what? 그게 어때서", t:"那又怎樣？那有什麼關係"},
+      ]},
+  ]},
+  { id:12, mood:"power", title:"Outro: Wings", year:2016, album:"Wings",
+    desc:"展翅飛翔的意志，《Wings》專輯精神總結，層次豐富",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"날아가 끝이 없는 이 하늘", t:"飛翔吧，這無盡的天空"},
+        {o:"I can fly, I'm alive", t:"我能飛翔，我還活著"},
+        {o:"날개를 펼쳐", t:"展開翅膀"},
+      ]},
+      { s:"Outro", lines:[
+        {o:"I can fly", t:"我能飛翔"},
+        {o:"나는 날개를 폈어", t:"我展開了翅膀"},
+        {o:"두려워하지 않아", t:"我不害怕"},
+      ]},
+  ]},
+
+  // ── 🌑 深淵 ──
+  { id:13, mood:"dark", title:"Boy in Luv (상남자)", year:2014, album:"Skool Luv Affair",
+    desc:"初戀男孩的笨拙直球，掩不住的緊張與渴望",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"이 감정이 뭔지 몰라서", t:"不知道這感情是什麼"},
+        {o:"답답하지만 니가 좋아", t:"雖然悶悶的，但我就是喜歡你"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"내 여자가 돼줘", t:"成為我的女孩"},
+        {o:"야 이 상남자가", t:"嘿，這個真男人"},
+        {o:"니 마음을 훔쳐가는", t:"要偷走你的心"},
+      ]},
+  ]},
+  { id:14, mood:"dark", title:"I Need U", year:2015, album:"화양연화 Pt.1",
+    desc:"BTS 首個重大突破曲，MV 充滿詩意的悲劇敘事",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"넌 나의 피 땀 눈물", t:"你是我的血汗淚"},
+        {o:"Lost my way", t:"我迷失了方向"},
+        {o:"잘못된 길에서 날 찾아줘", t:"在錯誤的路上找到我"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"I need you girl", t:"我需要你，女孩"},
+        {o:"왜 이렇게 작동하지가 않아", t:"為什麼這樣就是運作不了"},
+        {o:"I need you girl", t:"我需要你"},
+      ]},
+  ]},
+  { id:15, mood:"dark", title:"Save Me", year:2016, album:"화양연화 Young Forever",
+    desc:"脆弱中的呼救，旋律輕柔卻情感深重",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"Lost my way", t:"我迷路了"},
+        {o:"날이 갈수록 깊어지는 이 상처", t:"日漸加深的這道傷"},
+        {o:"날 구해줘요", t:"救救我"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Save me, save me", t:"救救我，救救我"},
+        {o:"I need your love before I fall", t:"在我倒下前我需要你的愛"},
+        {o:"Save me", t:"救救我"},
+      ]},
+  ]},
+  { id:16, mood:"dark", title:"FAKE LOVE", year:2018, album:"LOVE YOURSELF 轉 'Tear'",
+    desc:"為了你偽裝成不同的自己，黑暗扭曲的愛情張力",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"널 위해 예쁜 거짓을 빚어내", t:"為了你製造美麗的謊言"},
+        {o:"나 지워 너로 채워넣어", t:"抹去我，用你來填滿"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"I'm so sick of this fake love", t:"我厭倦了這假愛情"},
+        {o:"Fake love, fake love", t:"假愛情，假愛情"},
+        {o:"For you I could pretend like I was happy", t:"為了你，我可以假裝快樂"},
+      ]},
+  ]},
+
+  // ── 🌿 治癒 ──
+  { id:17, mood:"heal", title:"Run", year:2015, album:"화양연화 Pt.2",
+    desc:"即使受傷仍要奔跑，青春本來就是一場無悔的跌倒",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"비가 쏟아지는 골목에서", t:"在傾盆大雨的小巷裡"},
+        {o:"숨이 차올라도 달려가", t:"就算喘不過氣也要跑"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"달려가 달려가 달려가", t:"跑吧 跑吧 跑吧"},
+        {o:"청춘이라 봐도 될지 몰라", t:"這算是青春也說不定"},
+        {o:"또 달려가 달려가", t:"再跑吧 跑吧"},
+      ]},
+  ]},
+  { id:18, mood:"heal", title:"Life Goes On", year:2020, album:"BE",
+    desc:"疫情停頓期的溫柔，「今天太陽也升起，生命繼續」",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"어느 날 세상이 멈췄어", t:"有一天世界停止了"},
+        {o:"아무런 예고도 없이", t:"毫無預兆地"},
+        {o:"창문 밖으로 보이는 풍경", t:"窗外看到的風景"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Like an echo in the forest", t:"像森林裡的回聲"},
+        {o:"오늘도 해는 뜨고", t:"今天太陽也升起"},
+        {o:"Life goes on, on, on, on", t:"生命繼續，繼續，繼續"},
+      ]},
+  ]},
+  { id:19, mood:"heal", title:"Crystal Snow", year:2017, album:"Face Yourself（日文版）",
+    desc:"如雪花般純淨溫柔的日文情歌，東京場演出尤其動人",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"君のことを もっと知りたくて", t:"更想了解你"},
+        {o:"でも言えなくて 黙っていた", t:"但說不出口，沉默著"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"二人の未来に 降り積もっていく", t:"漸漸堆積在我們兩人的未來中"},
+        {o:"Crystal snow", t:"如水晶般的雪"},
+        {o:"解けても消えない 愛の結晶", t:"就算融化也不消失的愛的結晶"},
+      ]},
+  ]},
+  { id:20, mood:"heal", title:"Magic Shop", year:2018, album:"LOVE YOURSELF 轉 'Tear'",
+    desc:"在最黑暗的心裡建一間魔法小屋，j-hope 創作的治癒系代表",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"얼마나 아프면 눈물이 나는 거야", t:"要多痛才會流淚呢"},
+        {o:"얼마나 슬프면 심장이 아픈 거야", t:"要多悲傷心才會痛呢"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"내가 나인 게 때론 싫어져도", t:"就算有時候討厭自己是自己"},
+        {o:"Magic shop", t:"魔法商店"},
+        {o:"이 문을 열어 니 맘속에", t:"打開這扇門，在你心中"},
+      ]},
+  ]},
+  { id:21, mood:"heal", title:"Spring Day (봄날)", year:2017, album:"You Never Walk Alone",
+    desc:"思念與等待的詩，多年蟬聯韓國音源榜的不朽名曲",
+    lyrics:[
+      { s:"Verse 1", lines:[
+        {o:"보고 싶다", t:"我想見你"},
+        {o:"이렇게 말하니까 더 보고 싶다", t:"這樣說讓我更想見你"},
+        {o:"너희 사진을 보고 있어도", t:"就算看著你的照片"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"봄날처럼 꽃피울 때까지", t:"像春日一樣直到花開的那天"},
+        {o:"기다릴게 기다릴게", t:"我會等待，我會等待"},
+      ]},
+      { s:"Bridge", lines:[
+        {o:"봄이 오고 있어", t:"春天來了"},
+        {o:"꽃 피고 있어", t:"花正在盛開"},
+        {o:"I miss you", t:"我想念你"},
+      ]},
+  ]},
+  { id:22, mood:"heal", title:"Mikrokosmos", year:2019, album:"Map of the Soul: Persona",
+    desc:"「你是我的宇宙」，獻給 ARMY 的情書，現場最催淚",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"각자의 빛깔로 빛나는", t:"用各自的顏色閃耀"},
+        {o:"작은 우주 하나", t:"一個小小宇宙"},
+        {o:"너의 가장 깊은 곳에서", t:"在你最深的地方"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"수억 개의 별 중에 빛나는", t:"在數億顆星中閃耀"},
+        {o:"너라는 존재", t:"你這個存在"},
+        {o:"어떤 어둠도 어떤 계절도", t:"任何黑暗，任何季節"},
+        {o:"너를 막을 순 없어", t:"都無法阻擋你"},
+      ]},
+  ]},
+
+  // ── 💕 甜蜜 ──
+  { id:23, mood:"love", title:"Just One Day (하루만)", year:2014, album:"Skool Luv Affair",
+    desc:"只求與喜歡的人共度一天的溫柔幻想",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"상상을 해봐 둘이서", t:"想像一下兩個人"},
+        {o:"같이 걸어가는 것", t:"一起走路的樣子"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"하루만 하루만", t:"一天就好，一天就好"},
+        {o:"네 곁에 있을 수 있다면", t:"如果能在你身邊待一天"},
+        {o:"하루만 네가 내 거라면", t:"一天，如果你是我的"},
+      ]},
+  ]},
+  { id:24, mood:"love", title:"For You", year:2014, album:"日文單曲",
+    desc:"日文初戀情歌，出道期清新質樸的告白之作",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"君のために もっと頑張るから", t:"為了你我會更加努力"},
+        {o:"きっと かならず", t:"一定，絕對"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"For you I'll be 強くなれる", t:"為了你我願意，我會變得更強"},
+        {o:"For you I could", t:"為了你我做得到"},
+      ]},
+  ]},
+  { id:25, mood:"love", title:"Pied Piper", year:2017, album:"LOVE YOURSELF 'Her'",
+    desc:"用花衣魔笛手比喻對 ARMY 的自嘲式溺愛情歌",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"네가 나를 따라오게 만드는 것", t:"讓你跟著我走的那個東西"},
+        {o:"그건 바로 나야", t:"那就是我"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"우릴 탓해, 우릴 탓해", t:"怪我們吧，怪我們吧"},
+        {o:"책임은 우리가 다 질게", t:"責任都由我們來承擔"},
+        {o:"Follow me", t:"跟著我"},
+      ]},
+  ]},
+  { id:26, mood:"love", title:"Best Of Me", year:2017, album:"LOVE YOURSELF 'Her'",
+    desc:"與 The Chainsmokers 合作，純粹直白的愛情告白",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"넌 나의 피 땀 눈물이야", t:"你是我的血汗淚"},
+        {o:"내 마지막이야", t:"你是我的最後"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"You're the best of me", t:"你是我最好的部分"},
+        {o:"You're the best of me", t:"你是我最好的部分"},
+        {o:"Without you I'm nothing", t:"沒有你我什麼都不是"},
+      ]},
+  ]},
+  { id:27, mood:"love", title:"DNA", year:2017, album:"LOVE YOURSELF 'Her'",
+    desc:"天生注定的靈魂連結，BTS 進入全球視野的里程碑單曲",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"우리 만남은 우연이 아니야", t:"我們的相遇不是偶然"},
+        {o:"어쩌면 우린 전생에도", t:"也許我們在前世"},
+        {o:"서로를 사랑했겠지", t:"也曾相愛過"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"내 혈관 속 DNA가 말해", t:"我血管裡的 DNA 說著"},
+        {o:"너와 함께 하길 원해", t:"想要和你在一起"},
+        {o:"우리 만남은 DNA", t:"我們的相遇在 DNA 裡"},
+      ]},
+  ]},
+  { id:28, mood:"love", title:"Boy With Luv (feat. Halsey)", year:2019, album:"Map of the Soul: Persona",
+    desc:"化繁為簡的成熟之愛，「我只需要你的一個微笑」",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"Oh my my my my", t:"哦，我的天啊"},
+        {o:"I've waited all my life", t:"我等待了一生"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"화양연화", t:"最美好的時光"},
+        {o:"I want to be your antidote", t:"我想成為你的解藥"},
+        {o:"小小事物为诗", t:"為了小小事物而寫詩"},
+      ]},
+  ]},
+  { id:29, mood:"love", title:"Take Two", year:2023, album:"出道10週年單曲",
+    desc:"出道 10 週年重聚宣言，與 ARMY 共同書寫的第二章",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"10년이 지나도", t:"就算10年過去"},
+        {o:"변한 건 많지만", t:"很多都改變了"},
+        {o:"변하지 않는 게 있어", t:"但有些不變的東西"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"우리가 다시 만난 이 자리에서", t:"在我們重聚的這個地方"},
+        {o:"새로운 챕터를 써", t:"寫下新的章節"},
+        {o:"Take two", t:"第二幕，開始"},
+      ]},
+  ]},
+
+  // ── ✨ 升空 ──
+  { id:30, mood:"ascend", title:"Permission to Dance", year:2021, album:"Permission to Dance 單曲",
+    desc:"手語融入舞蹈，跨越語言的自由解放宣言",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"We don't need to worry", t:"我們不需要擔心"},
+        {o:"'Cause when we fall, we know how to land", t:"因為摔倒了我們知道如何著陸"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"We don't need permission to dance", t:"我們跳舞不需要許可"},
+        {o:"When it all seems like it's wrong", t:"當一切似乎都不對勁"},
+        {o:"Just sing along", t:"就一起唱吧"},
+      ]},
+  ]},
+  { id:31, mood:"ascend", title:"Butter", year:2021, album:"Butter 單曲",
+    desc:"甜蜜流暢，Billboard Hot 100 蟬聯 10 週冠軍",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"Smooth like butter", t:"如奶油般順滑"},
+        {o:"Like a criminal undercover", t:"像臥底犯罪嫌疑人"},
+        {o:"Gonna pop like trouble", t:"要爆發了"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"We're gonna bring the fire", t:"我們要帶來火焰"},
+        {o:"Making you feel the heat", t:"讓你感受熱度"},
+        {o:"Cool shade stunner", t:"清涼的帥哥"},
+      ]},
+  ]},
+  { id:32, mood:"ascend", title:"Dynamite", year:2020, album:"Dynamite 單曲",
+    desc:"疫情中的光，BTS 首支全英文單曲，用音樂陪你撐過去",
+    lyrics:[
+      { s:"Verse", lines:[
+        {o:"'Cause I, I, I'm in the stars tonight", t:"因為我今晚在星空中"},
+        {o:"So watch me bring the fire and set the night alight", t:"看我帶來火焰點亮黑夜"},
+      ]},
+      { s:"Chorus", lines:[
+        {o:"Dy-na-na-na, na-na-na-na-na-na", t:"動感節拍，炸！"},
+        {o:"Light it up like dynamite", t:"像炸藥一樣點亮"},
+        {o:"Dy-na-na-na-na-na", t:"爆炸！"},
+      ]},
+  ]},
+];
+
+function renderSongs(filterMood = 'all') {
+  const list = document.getElementById('songList');
+  list.innerHTML = '';
+  const moodOrder = ['ignite','power','dark','heal','love','ascend'];
+  moodOrder.forEach(mood => {
+    const group = SONGS.filter(s => s.mood === mood && (filterMood === 'all' || s.mood === filterMood));
+    if (!group.length) return;
+    const sec = document.createElement('div');
+    sec.className = 'mood-section';
+    sec.innerHTML = `<div class="mood-header"><h3>${MOODS[mood]}</h3><span class="count">${group.length} 首</span></div>`;
+    group.forEach(song => {
+      const card = document.createElement('div');
+      card.className = 'song-card';
+      card.innerHTML = `
+        <span class="song-num">${song.id}</span>
+        <div class="song-info">
+          <div class="song-title">${song.title}</div>
+          <div class="song-meta">${song.album} · ${song.year}</div>
+        </div>
+        <span class="play-icon">📖</span>`;
+      card.onclick = () => openLyrics(song);
+      sec.appendChild(card);
+    });
+    list.appendChild(sec);
+  });
+}
+
+function openLyrics(song) {
+  document.getElementById('mTitle').textContent = song.title;
+  document.getElementById('mSub').textContent = `${song.album} · ${song.year}`;
+  document.getElementById('mMood').textContent = MOODS[song.mood];
+  document.getElementById('mDesc').textContent = song.desc;
+  document.getElementById('lyricsContent').innerHTML = song.lyrics.map(sec => `
+    <div class="lyric-section">
+      <div class="section-tag">${sec.s}</div>
+      ${sec.lines.map(l => `
+        <div class="lyric-row">
+          <div class="lyric-orig">${l.o}</div>
+          <div class="lyric-cn">${l.t}</div>
+        </div>`).join('')}
+    </div>`).join('');
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeOnBg(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+document.querySelectorAll('.mood-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.mood-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderSongs(tab.dataset.mood);
+  });
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+renderSongs();
+</script>
+</body>
+</html>
