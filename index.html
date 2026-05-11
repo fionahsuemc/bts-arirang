@@ -240,38 +240,50 @@ header p { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
   header h1 { font-size: 0.88rem; }
   header p { display: none; }
 
+  /* 手機版：播放器在上，歌單在下 */
   .main {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    display: flex;
+    flex-direction: column;
     overflow: visible;
   }
 
-  .left {
-    border-right: none;
+  /* 右側（播放器）優先顯示 */
+  .right {
+    order: -1;
+    overflow: visible;
     border-bottom: 1px solid var(--border);
+  }
+
+  /* 左側（歌單）在下 */
+  .left {
+    order: 1;
+    border-right: none;
     overflow: visible;
     max-height: none;
   }
-  .song-list { overflow-y: visible; max-height: none; padding-bottom: 4px; }
+  .song-list { overflow-y: visible; max-height: none; padding-bottom: 8px; }
 
-  .right { overflow: visible; }
-
-  .player-area {
-    overflow: visible;
-  }
+  /* 播放器區塊 */
+  .player-area { overflow: visible; flex-direction: column; }
   .player-area.visible { display: flex; }
 
   .embed-wrap { padding: 12px 12px 0; }
-  .embed-wrap iframe { height: 160px; }
+  .embed-wrap iframe { height: 152px; }
 
   .song-bar { padding: 10px 14px 8px; }
   .song-bar h2 { font-size: 0.9rem; }
+  .song-bar .desc { font-size: 0.76rem; }
 
-  .lyrics-panel { overflow-y: visible; padding: 12px 14px; }
+  /* 歌詞在手機版直接展開，不限高度 */
+  .lyrics-panel { overflow-y: visible; padding: 12px 14px 20px; }
   .lyric-orig, .lyric-cn { font-size: 0.8rem; }
+  .lyric-row { gap: 8px; }
 
-  .welcome { padding: 30px 20px; }
+  /* 歡迎畫面更緊湊 */
+  .welcome { padding: 20px 16px; gap: 8px; }
   .welcome .big { font-size: 2rem; }
+  .welcome h2 { font-size: 0.9rem; }
+  .welcome p { font-size: 0.76rem; }
 }
 </style>
 </head>
@@ -874,9 +886,9 @@ function playSong(song) {
     activeCard.querySelector('.play-icon').textContent = '▶';
   }
 
-  // On mobile: scroll to player
+  // On mobile: scroll to top to see player
   if (window.innerWidth <= 700) {
-    document.getElementById('playerArea').scrollIntoView({ behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
