@@ -14,125 +14,79 @@
   --text: #F3E8FF;
   --muted: #9B8BB0;
   --card: rgba(123,47,190,0.12);
-  --card-hover: rgba(123,47,190,0.25);
+  --card-hover: rgba(123,47,190,0.28);
   --border: rgba(192,132,252,0.2);
+  --active: rgba(123,47,190,0.35);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; overflow:hidden; }
+html, body { height:100%; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', sans-serif;
-}
-@media (max-width: 768px) {
-  html, body { overflow: auto; height: auto; }
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* ── HEADER ── */
+/* HEADER */
 header {
-  height: 64px;
   background: linear-gradient(135deg,#1A0035,#07000F);
   border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
   display: flex;
   align-items: center;
-  padding: 0 28px;
-  gap: 14px;
+  gap: 12px;
   flex-shrink: 0;
 }
-.logo { font-size: 1.6rem; }
+.logo { font-size: 1.5rem; }
 header h1 {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   background: linear-gradient(90deg,#C084FC,#F0ABFC);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
-@media (max-width: 768px) {
-  header { height: auto; padding: 14px 16px; }
-  header h1 { font-size: 0.95rem; }
-  .logo { font-size: 1.3rem; }
-}
+header p { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
 
-/* ── LAYOUT ── */
-.layout {
+/* MAIN LAYOUT */
+.main {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  height: calc(100vh - 64px);
-}
-@media (max-width: 768px) {
-  .layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    height: auto;
-  }
+  grid-template-columns: 340px 1fr;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* ── LEFT PANEL ── */
-.player-panel {
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  padding: 20px;
+/* LEFT — Song list */
+.left {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  overflow-y: auto;
-}
-@media (max-width: 768px) {
-  .player-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: 14px;
-    overflow-y: visible;
-  }
-  .info-box { display: none; }
-}
-.panel-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--muted);
-}
-.spotify-embed { border-radius: 12px; overflow: hidden; }
-.info-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-.info-box h3 { font-size: 0.82rem; color: var(--primary-light); margin-bottom: 6px; }
-.info-box p  { font-size: 0.78rem; color: var(--muted); line-height: 1.65; }
-.mood-map    { font-size: 0.78rem; color: var(--muted); line-height: 2; }
-
-/* ── RIGHT PANEL ── */
-.browser-panel { display:flex; flex-direction:column; overflow:hidden; }
-@media (max-width: 768px) {
-  .browser-panel { overflow: visible; min-height: 60vh; }
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
 }
 
 .mood-tabs {
   display: flex;
-  gap: 8px;
-  padding: 14px 22px;
+  gap: 6px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
   overflow-x: auto;
   flex-shrink: 0;
+  scrollbar-width: none;
 }
-@media (max-width: 768px) {
-  .mood-tabs { padding: 10px 14px; gap: 6px; }
-  .mood-tab { font-size: 0.72rem; padding: 4px 10px; }
-}
+.mood-tabs::-webkit-scrollbar { display:none; }
 .mood-tab {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 0.78rem;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.74rem;
   color: var(--muted);
   cursor: pointer;
   white-space: nowrap;
-  transition: all .2s;
+  transition: all .18s;
 }
 .mood-tab:hover, .mood-tab.active {
   background: var(--primary);
@@ -143,167 +97,182 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
 .song-list {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 22px;
+  padding: 12px;
 }
-@media (max-width: 768px) {
-  .song-list { padding: 14px; overflow-y: visible; }
-  .song-card { padding: 10px 10px; }
-  .song-title { font-size: 0.83rem; }
-  .song-meta  { font-size: 0.68rem; }
-}
-.mood-section { margin-bottom: 26px; }
+.mood-section { margin-bottom: 20px; }
 .mood-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
-.mood-header h3 { font-size: 0.88rem; color: var(--primary-light); }
-.count {
-  font-size: 0.7rem;
-  color: var(--muted);
-  background: var(--card);
-  padding: 2px 8px;
-  border-radius: 10px;
-}
+.mood-header h3 { font-size: 0.8rem; color: var(--primary-light); }
+.count { font-size: 0.65rem; color: var(--muted); background: var(--card); padding: 1px 7px; border-radius: 10px; }
+
 .song-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 9px;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all .18s;
+  transition: all .15s;
   border: 1px solid transparent;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
-.song-card:hover {
-  background: var(--card-hover);
-  border-color: var(--border);
+.song-card:hover { background: var(--card-hover); border-color: var(--border); }
+.song-card.playing {
+  background: var(--active);
+  border-color: var(--primary);
 }
-.song-num { font-size: 0.72rem; color: var(--muted); width: 22px; text-align:center; }
-.song-info { flex:1; }
-.song-title { font-size: 0.87rem; font-weight:600; }
-.song-meta  { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
-.play-icon  { font-size:1rem; opacity:0; transition:opacity .2s; }
-.song-card:hover .play-icon { opacity:1; }
+.song-num { font-size: 0.68rem; color: var(--muted); width: 18px; text-align:center; flex-shrink:0; }
+.song-card.playing .song-num { color: var(--primary-light); }
+.song-info { flex:1; min-width:0; }
+.song-title { font-size: 0.84rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.song-card.playing .song-title { color: var(--primary-light); }
+.song-meta { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+.play-icon { font-size: 0.9rem; flex-shrink:0; opacity:0; transition:opacity .15s; }
+.song-card:hover .play-icon, .song-card.playing .play-icon { opacity:1; }
 
-/* ── MODAL ── */
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.88);
-  z-index: 200;
-  backdrop-filter: blur(10px);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.overlay.open { display:flex; }
-.modal {
-  background: linear-gradient(140deg,#1A0035,#08000E);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  width: 100%;
-  max-width: 820px;
-  max-height: 92vh;
-  overflow: hidden;
+/* RIGHT — Player + Lyrics */
+.right {
   display: flex;
   flex-direction: column;
-  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  overflow: hidden;
 }
-@media (max-width: 768px) {
-  .overlay { padding: 0; align-items: flex-end; }
-  .modal {
-    border-radius: 20px 20px 0 0;
-    max-height: 88vh;
-    max-width: 100%;
-  }
-  .modal-top { padding: 16px 18px 12px; }
-  .modal-top h2 { font-size: 1rem; }
-  .modal-desc { padding: 8px 18px; font-size: 0.78rem; }
-  .lyrics-body { padding: 16px 18px; }
-  .lyric-row { gap: 8px; padding: 6px 0; }
-  .lyric-orig, .lyric-cn { font-size: 0.82rem; }
-}
-.modal-top {
-  padding: 22px 26px 16px;
-  border-bottom: 1px solid var(--border);
+
+/* Welcome screen */
+.welcome {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+  padding: 40px;
+  text-align: center;
+}
+.welcome .big { font-size: 3rem; }
+.welcome h2 { font-size: 1rem; color: var(--primary-light); }
+.welcome p { font-size: 0.82rem; line-height: 1.7; }
+
+/* Player area */
+.player-area {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.player-area.visible { display: flex; }
+
+.embed-wrap {
+  padding: 16px 16px 0;
   flex-shrink: 0;
 }
-.modal-top h2  { font-size: 1.25rem; font-weight:700; }
-.modal-top .sub { font-size: 0.76rem; color: var(--muted); margin-top:4px; }
+.embed-wrap iframe {
+  border-radius: 12px;
+  display: block;
+}
+
+/* Song info bar */
+.song-bar {
+  padding: 12px 20px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.song-bar h2 { font-size: 1rem; font-weight:700; }
+.song-bar .sub { font-size: 0.74rem; color: var(--muted); margin-top:2px; }
+.song-bar .desc { font-size: 0.8rem; color: var(--primary-light); margin-top:6px; }
 .mood-badge {
   display: inline-block;
   background: var(--primary);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 2px 10px;
-  font-size: 0.72rem;
-  margin-top: 8px;
+  font-size: 0.68rem;
+  margin-top: 4px;
 }
-.close-btn {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  width: 32px; height: 32px;
-  color: var(--text);
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex; align-items:center; justify-content:center;
-  flex-shrink: 0;
-  transition: background .2s;
-}
-.close-btn:hover { background: var(--card-hover); }
-.modal-desc {
-  padding: 10px 26px;
-  font-size: 0.82rem;
-  color: var(--primary-light);
-  background: rgba(123,47,190,.08);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.lyrics-body {
-  flex:1;
+
+/* Lyrics panel */
+.lyrics-panel {
+  flex: 1;
   overflow-y: auto;
-  padding: 22px 26px;
+  padding: 16px 20px;
 }
 .col-header {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  padding-bottom: 10px;
-  margin-bottom: 6px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
   border-bottom: 1px solid var(--border);
 }
-.col-header span { font-size: 0.7rem; color: var(--muted); text-align:center; letter-spacing:1px; }
-.lyric-section { margin-bottom: 22px; }
+.col-header span { font-size: 0.65rem; color: var(--muted); text-align:center; letter-spacing:1px; text-transform:uppercase; }
+.lyric-section { margin-bottom: 18px; }
 .section-tag {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: var(--accent);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .lyric-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  padding: 7px 0;
+  padding: 6px 0;
   border-bottom: 1px solid rgba(192,132,252,.07);
 }
-.lyric-orig { font-size: 0.88rem; line-height:1.65; }
-.lyric-cn   { font-size: 0.88rem; line-height:1.65; color: var(--primary-light); }
+.lyric-orig { font-size: 0.86rem; line-height:1.65; }
+.lyric-cn   { font-size: 0.86rem; line-height:1.65; color: var(--primary-light); }
 
 /* scrollbar */
-::-webkit-scrollbar { width:3px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--primary); border-radius:4px; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+/* MOBILE */
+@media (max-width: 700px) {
+  body { overflow-y: auto; height: auto; }
+  header { padding: 10px 14px; }
+  header h1 { font-size: 0.88rem; }
+  header p { display: none; }
+
+  .main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    overflow: visible;
+  }
+
+  .left {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
+    max-height: none;
+  }
+  .song-list { overflow-y: visible; max-height: none; padding-bottom: 4px; }
+
+  .right { overflow: visible; }
+
+  .player-area {
+    overflow: visible;
+  }
+  .player-area.visible { display: flex; }
+
+  .embed-wrap { padding: 12px 12px 0; }
+  .embed-wrap iframe { height: 160px; }
+
+  .song-bar { padding: 10px 14px 8px; }
+  .song-bar h2 { font-size: 0.9rem; }
+
+  .lyrics-panel { overflow-y: visible; padding: 12px 14px; }
+  .lyric-orig, .lyric-cn { font-size: 0.8rem; }
+
+  .welcome { padding: 30px 20px; }
+  .welcome .big { font-size: 2rem; }
+}
 </style>
 </head>
 <body>
@@ -312,43 +281,16 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
   <div class="logo">🎤</div>
   <div>
     <h1>BTS《ARIRANG》2026 巡迴 — 情緒歌單</h1>
-    <p>32 首經典 · 排除新專輯 · 6 種情緒流動 · 完整歌詞翻譯</p>
+    <p>點選歌曲即可播放並顯示歌詞</p>
   </div>
 </header>
 
-<div class="layout">
-  <!-- LEFT -->
-  <div class="player-panel">
-    <div class="panel-label">🎵 Spotify 播放器</div>
-    <div class="spotify-embed">
-      <iframe
-        src="https://open.spotify.com/embed/playlist/2HGCWh77ek47ZbbfTfkZGZ?utm_source=generator&theme=0"
-        width="100%" height="380" frameBorder="0"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy">
-      </iframe>
-    </div>
-    <div class="info-box">
-      <h3>📋 關於此歌單</h3>
-      <p>依情緒流動精選 BTS ARIRANG 2026 巡迴的 32 首經典，排除新專輯曲目。點右側歌名可查看完整中文歌詞。</p>
-    </div>
-    <div class="info-box">
-      <h3>🗺️ 情緒旅程</h3>
-      <div class="mood-map">
-        🔥 點火 — 全場燃燒<br>
-        ⚔️ 宣言 — 力量反抗<br>
-        🌑 深淵 — 黑暗情感<br>
-        🌿 治癒 — 溫柔庇護<br>
-        💕 甜蜜 — 愛與思念<br>
-        ✨ 升空 — 希望慶典
-      </div>
-    </div>
-  </div>
+<div class="main">
 
-  <!-- RIGHT -->
-  <div class="browser-panel">
+  <!-- LEFT: Song List -->
+  <div class="left">
     <div class="mood-tabs">
-      <button class="mood-tab active" data-mood="all">全部 32首</button>
+      <button class="mood-tab active" data-mood="all">全部</button>
       <button class="mood-tab" data-mood="ignite">🔥 點火</button>
       <button class="mood-tab" data-mood="power">⚔️ 宣言</button>
       <button class="mood-tab" data-mood="dark">🌑 深淵</button>
@@ -358,28 +300,38 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
     </div>
     <div class="song-list" id="songList"></div>
   </div>
-</div>
 
-<!-- LYRICS MODAL -->
-<div class="overlay" id="overlay" onclick="closeOnBg(event)">
-  <div class="modal">
-    <div class="modal-top">
-      <div>
-        <h2 id="mTitle"></h2>
-        <div class="sub" id="mSub"></div>
-        <div class="mood-badge" id="mMood"></div>
-      </div>
-      <button class="close-btn" onclick="closeModal()">✕</button>
+  <!-- RIGHT: Player + Lyrics -->
+  <div class="right">
+    <div class="welcome" id="welcome">
+      <div class="big">🎵</div>
+      <h2>點選左側歌曲開始聆聽</h2>
+      <p>點擊任一首歌後，<br>Spotify 播放器與中文歌詞<br>將同步顯示在這裡</p>
     </div>
-    <div class="modal-desc" id="mDesc"></div>
-    <div class="lyrics-body">
-      <div class="col-header">
-        <span>原文</span>
-        <span>中文翻譯</span>
+
+    <div class="player-area" id="playerArea">
+      <div class="embed-wrap">
+        <iframe id="spotifyEmbed"
+          width="100%" height="152" frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy">
+        </iframe>
       </div>
-      <div id="lyricsContent"></div>
+      <div class="song-bar">
+        <h2 id="barTitle"></h2>
+        <div class="sub" id="barSub"></div>
+        <div class="mood-badge" id="barMood"></div>
+        <div class="desc" id="barDesc"></div>
+      </div>
+      <div class="lyrics-panel">
+        <div class="col-header">
+          <span>原文</span><span>中文翻譯</span>
+        </div>
+        <div id="lyricsContent"></div>
+      </div>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -393,8 +345,9 @@ const MOODS = {
 };
 
 const SONGS = [
-  // ── 🔥 點火 ──
-  { id:1, mood:"ignite", title:"Fire (Burning Up)", year:2016, album:"화양연화 Young Forever",
+  // 🔥 點火
+  { id:1, mood:"ignite", spotifyId:"0aE3V0zgSD2YwkEHW42gxG",
+    title:"Fire (Burning Up)", year:2016, album:"화양연화 Young Forever",
     desc:"活在當下、燃燒一切的青春宣言，BPM 最快之一",
     lyrics:[
       { s:"Verse 1", lines:[
@@ -412,7 +365,8 @@ const SONGS = [
         {o:"Burn it up, burn it up", t:"燃燒吧，燃燒吧"},
       ]},
   ]},
-  { id:2, mood:"ignite", title:"Run BTS", year:2022, album:"Proof",
+  { id:2, mood:"ignite", spotifyId:"69xohKu8C1fsflYAiSNbwM",
+    title:"Run BTS", year:2022, album:"Proof",
     desc:"《Proof》精選輯主打，充滿活力的自我宣言，巡演開場必炸",
     lyrics:[
       { s:"Verse", lines:[
@@ -426,7 +380,8 @@ const SONGS = [
         {o:"달려라 방탄, 달려라 방탄", t:"跑啊防彈，跑啊防彈"},
       ]},
   ]},
-  { id:3, mood:"ignite", title:"Not Today", year:2017, album:"You Never Walk Alone",
+  { id:3, mood:"ignite", spotifyId:"3wyrhwPpV8uhMMEms4vG3X",
+    title:"Not Today", year:2017, album:"You Never Walk Alone",
     desc:"反抗與不屈的吶喊，「今天不行，但明天可以」",
     lyrics:[
       { s:"Verse", lines:[
@@ -440,7 +395,8 @@ const SONGS = [
         {o:"No, not today", t:"不，不是今天"},
       ]},
   ]},
-  { id:4, mood:"ignite", title:"Dope (쩔어)", year:2015, album:"화양연화 Pt.1",
+  { id:4, mood:"ignite", spotifyId:"7jPCPDYoiaKeK7cgNGpIzq",
+    title:"Dope (쩔어)", year:2015, album:"화양연화 Pt.1",
     desc:"對社會「努力沒用」論的強力反擊，嘻哈能量滿載",
     lyrics:[
       { s:"Verse", lines:[
@@ -449,12 +405,12 @@ const SONGS = [
         {o:"우린 쩔어", t:"我們太厲害了"},
       ]},
       { s:"Chorus", lines:[
-        {o:"We're so dope", t:"我們超棒"},
-        {o:"쩔어 쩔어", t:"太帥了 太帥了"},
+        {o:"We're so dope, 쩔어 쩔어", t:"我們超棒，太帥了太帥了"},
         {o:"우리 가는 길에 꽃을 뿌려", t:"在我們前進的路上撒滿鮮花"},
       ]},
   ]},
-  { id:5, mood:"ignite", title:"ON", year:2020, album:"Map of the Soul: 7",
+  { id:5, mood:"ignite", spotifyId:"0fZRNhPJ4AGmwY7rkpdbqK",
+    title:"ON", year:2020, album:"Map of the Soul: 7",
     desc:"軍歌式宣戰宣言，無論多重的重量都要承受前行",
     lyrics:[
       { s:"Verse", lines:[
@@ -468,7 +424,8 @@ const SONGS = [
         {o:"Let me try, let me try", t:"讓我試試，讓我試試"},
       ]},
   ]},
-  { id:6, mood:"ignite", title:"Dionysus", year:2019, album:"Map of the Soul: Persona",
+  { id:6, mood:"ignite", spotifyId:"2Wkm4JBcIV2uSuu4qlbqFN",
+    title:"Dionysus", year:2019, album:"Map of the Soul: Persona",
     desc:"以酒神比喻對藝術的狂熱，Live 演出最具視覺震撼力之一",
     lyrics:[
       { s:"Verse", lines:[
@@ -478,13 +435,12 @@ const SONGS = [
       ]},
       { s:"Chorus", lines:[
         {o:"I drink alone, drink alone", t:"我獨自喝酒，獨自喝酒"},
-        {o:"Dionysus", t:"酒神狄俄尼索斯"},
         {o:"나의 thyrsos는 붓과 마이크", t:"我的神杖是畫筆和麥克風"},
       ]},
   ]},
-
-  // ── ⚔️ 宣言 ──
-  { id:7, mood:"power", title:"MIC Drop (Steve Aoki Remix)", year:2017, album:"You Never Walk Alone",
+  // ⚔️ 宣言
+  { id:7, mood:"power", spotifyId:"4gZGAVECoiutzp64KSHNjE",
+    title:"MIC Drop (Steve Aoki Remix)", year:2017, album:"You Never Walk Alone",
     desc:"對所有批評者的自信回擊，麥克風一丟",
     lyrics:[
       { s:"Verse", lines:[
@@ -494,12 +450,12 @@ const SONGS = [
       ]},
       { s:"Chorus", lines:[
         {o:"Mic drop, drop, drop", t:"麥克風一丟"},
-        {o:"Mic drop", t:"麥克風落地"},
         {o:"I don't give a damn", t:"我才不在乎"},
       ]},
   ]},
-  { id:8, mood:"power", title:"IDOL", year:2018, album:"LOVE YOURSELF 結 'Answer'",
-    desc:"融合傳統韓樂與現代嘻哈，我就是我，不需外界認可的自我宣言",
+  { id:8, mood:"power", spotifyId:"1e8J3XClxZbFmvIHLI8CE4",
+    title:"IDOL", year:2018, album:"LOVE YOURSELF 結 'Answer'",
+    desc:"融合傳統韓樂與現代嘻哈，我就是我，不需外界認可",
     lyrics:[
       { s:"Verse", lines:[
         {o:"어떤 말로도 내 힘을 빼앗을 순 없어", t:"任何話都無法奪走我的力量"},
@@ -511,8 +467,9 @@ const SONGS = [
         {o:"You can't stop me loving myself", t:"你無法阻止我愛自己"},
       ]},
   ]},
-  { id:9, mood:"power", title:"We Are Bulletproof Pt.2", year:2013, album:"O!RUL8,2?",
-    desc:"出道精神，歷經一切嘲諷仍屹立不搖，全場大合唱燃點",
+  { id:9, mood:"power", spotifyId:"5pjHS3EpHurMyIpB2QBnEd",
+    title:"We Are Bulletproof Pt.2", year:2013, album:"O!RUL8,2?",
+    desc:"出道精神，歷經一切嘲諷仍屹立不搖，全場大合唱",
     lyrics:[
       { s:"Verse", lines:[
         {o:"야 우리가 왔어", t:"嘿，我們來了"},
@@ -521,11 +478,11 @@ const SONGS = [
       ]},
       { s:"Chorus", lines:[
         {o:"Bulletproof, we are", t:"防彈，我們是防彈的"},
-        {o:"너네 총알도 안 먹혀", t:"你們的子彈對我們不管用"},
         {o:"We are bulletproof", t:"我們是防彈的"},
       ]},
   ]},
-  { id:10, mood:"power", title:"Silver Spoon (뱁새)", year:2016, album:"화양연화 Young Forever",
+  { id:10, mood:"power", spotifyId:"6O734u9qnz6B4gWMyszWhi",
+    title:"Silver Spoon (뱁새)", year:2016, album:"화양연화 Young Forever",
     desc:"鷺鷥學鶴步的社會諷刺，階層固化的犀利批判",
     lyrics:[
       { s:"Verse", lines:[
@@ -538,7 +495,8 @@ const SONGS = [
         {o:"부모 탓 말고 니 탓 해", t:"別怨怪父母，怪你自己"},
       ]},
   ]},
-  { id:11, mood:"power", title:"So What", year:2020, album:"Map of the Soul: 7",
+  { id:11, mood:"power", spotifyId:"0wqqe8k13bJPxRt7FEmnwS",
+    title:"So What", year:2020, album:"Map of the Soul: 7",
     desc:"失敗又如何，輕鬆無懼的吶喊",
     lyrics:[
       { s:"Verse", lines:[
@@ -551,13 +509,13 @@ const SONGS = [
         {o:"So what? 그게 어때서", t:"那又怎樣？那有什麼關係"},
       ]},
   ]},
-  { id:12, mood:"power", title:"Outro: Wings", year:2016, album:"Wings",
-    desc:"展翅飛翔的意志，《Wings》專輯精神總結，層次豐富",
+  { id:12, mood:"power", spotifyId:"7kyUapJyppdjzoAWB6XS14",
+    title:"Outro: Wings", year:2016, album:"Wings",
+    desc:"展翅飛翔的意志，《Wings》專輯精神總結",
     lyrics:[
       { s:"Verse", lines:[
         {o:"날아가 끝이 없는 이 하늘", t:"飛翔吧，這無盡的天空"},
         {o:"I can fly, I'm alive", t:"我能飛翔，我還活著"},
-        {o:"날개를 펼쳐", t:"展開翅膀"},
       ]},
       { s:"Outro", lines:[
         {o:"I can fly", t:"我能飛翔"},
@@ -565,9 +523,9 @@ const SONGS = [
         {o:"두려워하지 않아", t:"我不害怕"},
       ]},
   ]},
-
-  // ── 🌑 深淵 ──
-  { id:13, mood:"dark", title:"Boy in Luv (상남자)", year:2014, album:"Skool Luv Affair",
+  // 🌑 深淵
+  { id:13, mood:"dark", spotifyId:"3FnDv33WrrMtuEr7hNR3ev",
+    title:"Boy in Luv (상남자)", year:2014, album:"Skool Luv Affair",
     desc:"初戀男孩的笨拙直球，掩不住的緊張與渴望",
     lyrics:[
       { s:"Verse", lines:[
@@ -580,7 +538,8 @@ const SONGS = [
         {o:"니 마음을 훔쳐가는", t:"要偷走你的心"},
       ]},
   ]},
-  { id:14, mood:"dark", title:"I Need U", year:2015, album:"화양연화 Pt.1",
+  { id:14, mood:"dark", spotifyId:"3wQnyXNFXNUEOBt1pb4urq",
+    title:"I Need U", year:2015, album:"화양연화 Pt.1",
     desc:"BTS 首個重大突破曲，MV 充滿詩意的悲劇敘事",
     lyrics:[
       { s:"Verse", lines:[
@@ -591,10 +550,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"I need you girl", t:"我需要你，女孩"},
         {o:"왜 이렇게 작동하지가 않아", t:"為什麼這樣就是運作不了"},
-        {o:"I need you girl", t:"我需要你"},
       ]},
   ]},
-  { id:15, mood:"dark", title:"Save Me", year:2016, album:"화양연화 Young Forever",
+  { id:15, mood:"dark", spotifyId:"7bxGcILuAjkZzaveU28ZJS",
+    title:"Save Me", year:2016, album:"화양연화 Young Forever",
     desc:"脆弱中的呼救，旋律輕柔卻情感深重",
     lyrics:[
       { s:"Verse", lines:[
@@ -605,10 +564,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"Save me, save me", t:"救救我，救救我"},
         {o:"I need your love before I fall", t:"在我倒下前我需要你的愛"},
-        {o:"Save me", t:"救救我"},
       ]},
   ]},
-  { id:16, mood:"dark", title:"FAKE LOVE", year:2018, album:"LOVE YOURSELF 轉 'Tear'",
+  { id:16, mood:"dark", spotifyId:"6m1TWFMeon7ai9XLOzdbiR",
+    title:"FAKE LOVE", year:2018, album:"LOVE YOURSELF 轉 'Tear'",
     desc:"為了你偽裝成不同的自己，黑暗扭曲的愛情張力",
     lyrics:[
       { s:"Verse", lines:[
@@ -617,13 +576,12 @@ const SONGS = [
       ]},
       { s:"Chorus", lines:[
         {o:"I'm so sick of this fake love", t:"我厭倦了這假愛情"},
-        {o:"Fake love, fake love", t:"假愛情，假愛情"},
         {o:"For you I could pretend like I was happy", t:"為了你，我可以假裝快樂"},
       ]},
   ]},
-
-  // ── 🌿 治癒 ──
-  { id:17, mood:"heal", title:"Run", year:2015, album:"화양연화 Pt.2",
+  // 🌿 治癒
+  { id:17, mood:"heal", spotifyId:"3G1aAxWS2Nd17FQs4PWV6X",
+    title:"Run", year:2015, album:"화양연화 Pt.2",
     desc:"即使受傷仍要奔跑，青春本來就是一場無悔的跌倒",
     lyrics:[
       { s:"Verse", lines:[
@@ -636,13 +594,13 @@ const SONGS = [
         {o:"또 달려가 달려가", t:"再跑吧 跑吧"},
       ]},
   ]},
-  { id:18, mood:"heal", title:"Life Goes On", year:2020, album:"BE",
+  { id:18, mood:"heal", spotifyId:"5FVbvttjEvQ8r2BgUcJgNg",
+    title:"Life Goes On", year:2020, album:"BE",
     desc:"疫情停頓期的溫柔，「今天太陽也升起，生命繼續」",
     lyrics:[
       { s:"Verse", lines:[
         {o:"어느 날 세상이 멈췄어", t:"有一天世界停止了"},
         {o:"아무런 예고도 없이", t:"毫無預兆地"},
-        {o:"창문 밖으로 보이는 풍경", t:"窗外看到的風景"},
       ]},
       { s:"Chorus", lines:[
         {o:"Like an echo in the forest", t:"像森林裡的回聲"},
@@ -650,7 +608,8 @@ const SONGS = [
         {o:"Life goes on, on, on, on", t:"生命繼續，繼續，繼續"},
       ]},
   ]},
-  { id:19, mood:"heal", title:"Crystal Snow", year:2017, album:"Face Yourself（日文版）",
+  { id:19, mood:"heal", spotifyId:"6NbfFVZ01Ttvvqmcok8DxL",
+    title:"Crystal Snow", year:2017, album:"Face Yourself（日文版）",
     desc:"如雪花般純淨溫柔的日文情歌，東京場演出尤其動人",
     lyrics:[
       { s:"Verse", lines:[
@@ -663,7 +622,8 @@ const SONGS = [
         {o:"解けても消えない 愛の結晶", t:"就算融化也不消失的愛的結晶"},
       ]},
   ]},
-  { id:20, mood:"heal", title:"Magic Shop", year:2018, album:"LOVE YOURSELF 轉 'Tear'",
+  { id:20, mood:"heal", spotifyId:"5MTGPkmiUuud9NkA0sl2nI",
+    title:"Magic Shop", year:2018, album:"LOVE YOURSELF 轉 'Tear'",
     desc:"在最黑暗的心裡建一間魔法小屋，j-hope 創作的治癒系代表",
     lyrics:[
       { s:"Verse", lines:[
@@ -676,13 +636,13 @@ const SONGS = [
         {o:"이 문을 열어 니 맘속에", t:"打開這扇門，在你心中"},
       ]},
   ]},
-  { id:21, mood:"heal", title:"Spring Day (봄날)", year:2017, album:"You Never Walk Alone",
+  { id:21, mood:"heal", spotifyId:"2j1fFjWHCI9KJSwcuYAOyF",
+    title:"Spring Day (봄날)", year:2017, album:"You Never Walk Alone",
     desc:"思念與等待的詩，多年蟬聯韓國音源榜的不朽名曲",
     lyrics:[
       { s:"Verse 1", lines:[
         {o:"보고 싶다", t:"我想見你"},
         {o:"이렇게 말하니까 더 보고 싶다", t:"這樣說讓我更想見你"},
-        {o:"너희 사진을 보고 있어도", t:"就算看著你的照片"},
       ]},
       { s:"Chorus", lines:[
         {o:"봄날처럼 꽃피울 때까지", t:"像春日一樣直到花開的那天"},
@@ -694,13 +654,13 @@ const SONGS = [
         {o:"I miss you", t:"我想念你"},
       ]},
   ]},
-  { id:22, mood:"heal", title:"Mikrokosmos", year:2019, album:"Map of the Soul: Persona",
+  { id:22, mood:"heal", spotifyId:"0jSccBRnhNU4KtACMQPvco",
+    title:"Mikrokosmos", year:2019, album:"Map of the Soul: Persona",
     desc:"「你是我的宇宙」，獻給 ARMY 的情書，現場最催淚",
     lyrics:[
       { s:"Verse", lines:[
         {o:"각자의 빛깔로 빛나는", t:"用各自的顏色閃耀"},
         {o:"작은 우주 하나", t:"一個小小宇宙"},
-        {o:"너의 가장 깊은 곳에서", t:"在你最深的地方"},
       ]},
       { s:"Chorus", lines:[
         {o:"수억 개의 별 중에 빛나는", t:"在數億顆星中閃耀"},
@@ -709,9 +669,9 @@ const SONGS = [
         {o:"너를 막을 순 없어", t:"都無法阻擋你"},
       ]},
   ]},
-
-  // ── 💕 甜蜜 ──
-  { id:23, mood:"love", title:"Just One Day (하루만)", year:2014, album:"Skool Luv Affair",
+  // 💕 甜蜜
+  { id:23, mood:"love", spotifyId:"6t7WriKgVszATnrdBKSUAf",
+    title:"Just One Day (하루만)", year:2014, album:"Skool Luv Affair",
     desc:"只求與喜歡的人共度一天的溫柔幻想",
     lyrics:[
       { s:"Verse", lines:[
@@ -721,10 +681,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"하루만 하루만", t:"一天就好，一天就好"},
         {o:"네 곁에 있을 수 있다면", t:"如果能在你身邊待一天"},
-        {o:"하루만 네가 내 거라면", t:"一天，如果你是我的"},
       ]},
   ]},
-  { id:24, mood:"love", title:"For You", year:2014, album:"日文單曲",
+  { id:24, mood:"love", spotifyId:"43x0i2PPXrmOGTTgoyqGNZ",
+    title:"For You", year:2014, album:"日文單曲",
     desc:"日文初戀情歌，出道期清新質樸的告白之作",
     lyrics:[
       { s:"Verse", lines:[
@@ -736,7 +696,8 @@ const SONGS = [
         {o:"For you I could", t:"為了你我做得到"},
       ]},
   ]},
-  { id:25, mood:"love", title:"Pied Piper", year:2017, album:"LOVE YOURSELF 'Her'",
+  { id:25, mood:"love", spotifyId:"1ZPeaPDjQOOC8hw1mNjyjF",
+    title:"Pied Piper", year:2017, album:"LOVE YOURSELF 'Her'",
     desc:"用花衣魔笛手比喻對 ARMY 的自嘲式溺愛情歌",
     lyrics:[
       { s:"Verse", lines:[
@@ -746,10 +707,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"우릴 탓해, 우릴 탓해", t:"怪我們吧，怪我們吧"},
         {o:"책임은 우리가 다 질게", t:"責任都由我們來承擔"},
-        {o:"Follow me", t:"跟著我"},
       ]},
   ]},
-  { id:26, mood:"love", title:"Best Of Me", year:2017, album:"LOVE YOURSELF 'Her'",
+  { id:26, mood:"love", spotifyId:"5C6A1WXVfKvBBQmaFFnBgs",
+    title:"Best Of Me", year:2017, album:"LOVE YOURSELF 'Her'",
     desc:"與 The Chainsmokers 合作，純粹直白的愛情告白",
     lyrics:[
       { s:"Verse", lines:[
@@ -758,11 +719,11 @@ const SONGS = [
       ]},
       { s:"Chorus", lines:[
         {o:"You're the best of me", t:"你是我最好的部分"},
-        {o:"You're the best of me", t:"你是我最好的部分"},
         {o:"Without you I'm nothing", t:"沒有你我什麼都不是"},
       ]},
   ]},
-  { id:27, mood:"love", title:"DNA", year:2017, album:"LOVE YOURSELF 'Her'",
+  { id:27, mood:"love", spotifyId:"3uRLwBjI2TahxslcMTvpFs",
+    title:"DNA", year:2017, album:"LOVE YOURSELF 'Her'",
     desc:"天生注定的靈魂連結，BTS 進入全球視野的里程碑單曲",
     lyrics:[
       { s:"Verse", lines:[
@@ -773,10 +734,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"내 혈관 속 DNA가 말해", t:"我血管裡的 DNA 說著"},
         {o:"너와 함께 하길 원해", t:"想要和你在一起"},
-        {o:"우리 만남은 DNA", t:"我們的相遇在 DNA 裡"},
       ]},
   ]},
-  { id:28, mood:"love", title:"Boy With Luv (feat. Halsey)", year:2019, album:"Map of the Soul: Persona",
+  { id:28, mood:"love", spotifyId:"4a9tbd947vo9K8Vti9JwcI",
+    title:"Boy With Luv (feat. Halsey)", year:2019, album:"Map of the Soul: Persona",
     desc:"化繁為簡的成熟之愛，「我只需要你的一個微笑」",
     lyrics:[
       { s:"Verse", lines:[
@@ -786,10 +747,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"화양연화", t:"最美好的時光"},
         {o:"I want to be your antidote", t:"我想成為你的解藥"},
-        {o:"小小事物为诗", t:"為了小小事物而寫詩"},
       ]},
   ]},
-  { id:29, mood:"love", title:"Take Two", year:2023, album:"出道10週年單曲",
+  { id:29, mood:"love", spotifyId:"5IAESfJjmOYu7cHyX557kz",
+    title:"Take Two", year:2023, album:"出道10週年單曲",
     desc:"出道 10 週年重聚宣言，與 ARMY 共同書寫的第二章",
     lyrics:[
       { s:"Verse", lines:[
@@ -803,9 +764,9 @@ const SONGS = [
         {o:"Take two", t:"第二幕，開始"},
       ]},
   ]},
-
-  // ── ✨ 升空 ──
-  { id:30, mood:"ascend", title:"Permission to Dance", year:2021, album:"Permission to Dance 單曲",
+  // ✨ 升空
+  { id:30, mood:"ascend", spotifyId:"3XYRV7ZSHqIRDG87DKTtry",
+    title:"Permission to Dance", year:2021, album:"Permission to Dance 單曲",
     desc:"手語融入舞蹈，跨越語言的自由解放宣言",
     lyrics:[
       { s:"Verse", lines:[
@@ -818,7 +779,8 @@ const SONGS = [
         {o:"Just sing along", t:"就一起唱吧"},
       ]},
   ]},
-  { id:31, mood:"ascend", title:"Butter", year:2021, album:"Butter 單曲",
+  { id:31, mood:"ascend", spotifyId:"6jjYDGxVJsWS0a5wlVF5vS",
+    title:"Butter", year:2021, album:"Butter 單曲",
     desc:"甜蜜流暢，Billboard Hot 100 蟬聯 10 週冠軍",
     lyrics:[
       { s:"Verse", lines:[
@@ -829,10 +791,10 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"We're gonna bring the fire", t:"我們要帶來火焰"},
         {o:"Making you feel the heat", t:"讓你感受熱度"},
-        {o:"Cool shade stunner", t:"清涼的帥哥"},
       ]},
   ]},
-  { id:32, mood:"ascend", title:"Dynamite", year:2020, album:"Dynamite 單曲",
+  { id:32, mood:"ascend", spotifyId:"5QDLhrAOJJdNAmCTJ8xMyW",
+    title:"Dynamite", year:2020, album:"Dynamite 單曲",
     desc:"疫情中的光，BTS 首支全英文單曲，用音樂陪你撐過去",
     lyrics:[
       { s:"Verse", lines:[
@@ -842,10 +804,11 @@ const SONGS = [
       { s:"Chorus", lines:[
         {o:"Dy-na-na-na, na-na-na-na-na-na", t:"動感節拍，炸！"},
         {o:"Light it up like dynamite", t:"像炸藥一樣點亮"},
-        {o:"Dy-na-na-na-na-na", t:"爆炸！"},
       ]},
   ]},
 ];
+
+let currentId = null;
 
 function renderSongs(filterMood = 'all') {
   const list = document.getElementById('songList');
@@ -856,29 +819,39 @@ function renderSongs(filterMood = 'all') {
     if (!group.length) return;
     const sec = document.createElement('div');
     sec.className = 'mood-section';
-    sec.innerHTML = `<div class="mood-header"><h3>${MOODS[mood]}</h3><span class="count">${group.length} 首</span></div>`;
+    sec.innerHTML = `<div class="mood-header"><h3>${MOODS[mood]}</h3><span class="count">${group.length}</span></div>`;
     group.forEach(song => {
       const card = document.createElement('div');
-      card.className = 'song-card';
+      card.className = 'song-card' + (song.id === currentId ? ' playing' : '');
+      card.id = `card-${song.id}`;
       card.innerHTML = `
         <span class="song-num">${song.id}</span>
         <div class="song-info">
           <div class="song-title">${song.title}</div>
           <div class="song-meta">${song.album} · ${song.year}</div>
         </div>
-        <span class="play-icon">📖</span>`;
-      card.onclick = () => openLyrics(song);
+        <span class="play-icon">${song.id === currentId ? '▶' : '▶'}</span>`;
+      card.onclick = () => playSong(song);
       sec.appendChild(card);
     });
     list.appendChild(sec);
   });
 }
 
-function openLyrics(song) {
-  document.getElementById('mTitle').textContent = song.title;
-  document.getElementById('mSub').textContent = `${song.album} · ${song.year}`;
-  document.getElementById('mMood').textContent = MOODS[song.mood];
-  document.getElementById('mDesc').textContent = song.desc;
+function playSong(song) {
+  currentId = song.id;
+
+  // Update Spotify embed
+  document.getElementById('spotifyEmbed').src =
+    `https://open.spotify.com/embed/track/${song.spotifyId}?utm_source=generator&theme=0`;
+
+  // Update song info bar
+  document.getElementById('barTitle').textContent = song.title;
+  document.getElementById('barSub').textContent = `${song.album} · ${song.year}`;
+  document.getElementById('barMood').textContent = MOODS[song.mood];
+  document.getElementById('barDesc').textContent = song.desc;
+
+  // Update lyrics
   document.getElementById('lyricsContent').innerHTML = song.lyrics.map(sec => `
     <div class="lyric-section">
       <div class="section-tag">${sec.s}</div>
@@ -888,19 +861,26 @@ function openLyrics(song) {
           <div class="lyric-cn">${l.t}</div>
         </div>`).join('')}
     </div>`).join('');
-  document.getElementById('overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+
+  // Show player, hide welcome
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('playerArea').classList.add('visible');
+
+  // Update active card
+  document.querySelectorAll('.song-card').forEach(c => c.classList.remove('playing'));
+  const activeCard = document.getElementById(`card-${song.id}`);
+  if (activeCard) {
+    activeCard.classList.add('playing');
+    activeCard.querySelector('.play-icon').textContent = '▶';
+  }
+
+  // On mobile: scroll to player
+  if (window.innerWidth <= 700) {
+    document.getElementById('playerArea').scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function closeOnBg(e) {
-  if (e.target === document.getElementById('overlay')) closeModal();
-}
-
+// Mood tabs
 document.querySelectorAll('.mood-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.mood-tab').forEach(t => t.classList.remove('active'));
@@ -908,8 +888,6 @@ document.querySelectorAll('.mood-tab').forEach(tab => {
     renderSongs(tab.dataset.mood);
   });
 });
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 renderSongs();
 </script>
