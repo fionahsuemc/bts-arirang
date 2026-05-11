@@ -24,6 +24,9 @@ body {
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', sans-serif;
 }
+@media (max-width: 768px) {
+  html, body { overflow: auto; height: auto; }
+}
 
 /* ── HEADER ── */
 header {
@@ -45,12 +48,24 @@ header h1 {
   -webkit-text-fill-color: transparent;
 }
 header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
+@media (max-width: 768px) {
+  header { height: auto; padding: 14px 16px; }
+  header h1 { font-size: 0.95rem; }
+  .logo { font-size: 1.3rem; }
+}
 
 /* ── LAYOUT ── */
 .layout {
   display: grid;
   grid-template-columns: 360px 1fr;
   height: calc(100vh - 64px);
+}
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+  }
 }
 
 /* ── LEFT PANEL ── */
@@ -62,6 +77,15 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
   flex-direction: column;
   gap: 14px;
   overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .player-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 14px;
+    overflow-y: visible;
+  }
+  .info-box { display: none; }
 }
 .panel-label {
   font-size: 0.7rem;
@@ -82,6 +106,9 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
 
 /* ── RIGHT PANEL ── */
 .browser-panel { display:flex; flex-direction:column; overflow:hidden; }
+@media (max-width: 768px) {
+  .browser-panel { overflow: visible; min-height: 60vh; }
+}
 
 .mood-tabs {
   display: flex;
@@ -91,6 +118,10 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
   background: var(--surface);
   overflow-x: auto;
   flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .mood-tabs { padding: 10px 14px; gap: 6px; }
+  .mood-tab { font-size: 0.72rem; padding: 4px 10px; }
 }
 .mood-tab {
   background: var(--card);
@@ -113,6 +144,12 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
   flex: 1;
   overflow-y: auto;
   padding: 18px 22px;
+}
+@media (max-width: 768px) {
+  .song-list { padding: 14px; overflow-y: visible; }
+  .song-card { padding: 10px 10px; }
+  .song-title { font-size: 0.83rem; }
+  .song-meta  { font-size: 0.68rem; }
 }
 .mood-section { margin-bottom: 26px; }
 .mood-header {
@@ -177,6 +214,20 @@ header p { font-size: 0.72rem; color: var(--muted); margin-top:2px; }
   display: flex;
   flex-direction: column;
   box-shadow: 0 30px 80px rgba(0,0,0,.6);
+}
+@media (max-width: 768px) {
+  .overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 88vh;
+    max-width: 100%;
+  }
+  .modal-top { padding: 16px 18px 12px; }
+  .modal-top h2 { font-size: 1rem; }
+  .modal-desc { padding: 8px 18px; font-size: 0.78rem; }
+  .lyrics-body { padding: 16px 18px; }
+  .lyric-row { gap: 8px; padding: 6px 0; }
+  .lyric-orig, .lyric-cn { font-size: 0.82rem; }
 }
 .modal-top {
   padding: 22px 26px 16px;
